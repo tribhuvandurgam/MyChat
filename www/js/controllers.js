@@ -3,7 +3,7 @@ angular.module('starter.controllers', [])
 
 
 //MYCONTROLLER
-.controller('LoginCtrl', function($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope, Auth) {
+.controller('LoginCtrl', function($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope, Auth,Database) {
   console.log('Login Controller Initialized');
 
   $ionicModal.fromTemplateUrl('templates/signup.html', {
@@ -13,29 +13,42 @@ angular.module('starter.controllers', [])
   });
 
   $scope.createUser = function(user) {
+    console.log("Create User Function called");
+            if (user && user.email && user.password && user.displayname) {
+                $ionicLoading.show({
+                    template: 'Signing Up...'
+                });
 
+Auth.createUserWithEmailAndPassword(user.email,user.password).then(function (userData) {
+    alert("User created successfully!");
+    Database.ref().child("users").child(userData.uid).set({
+        email: user.email,
+        displayName: user.displayname
+    });
+    $ionicLoading.hide();
+    $scope.modal.hide();
+}).catch(function (error) {
+  if(error.code === "auth/email-already-in-use"){
+    alert(error);
+    $ionicLoading.hide();
+    $scope.modal.hide();
+  }else {
+    alert(error);
+    $ionicLoading.hide();
+  }
+
+});
+            } else
+    alert("Please fill all details");
   }
 
   $scope.signIn = function(user) {
     console.log("Sign In Clicked");
-    debugger;
-    if (user && user.email && user.pwdForLogin) {
+      if (user && user.email && user.pwdForLogin) {
       $ionicLoading.show({
         template: 'Signing In...'
       });
-      debugger;
-      // Auth.child("/users").on("value", function(snapshot) {
-      //   console.log(snapshot.val());
-      // });
       Auth.signInWithEmailAndPassword(user.email, user.pwdForLogin).then(function(authData) {
-        console.log("Logged in as:" + authData.uid);
-        // ref.child("users").child(authData.uid).once('value', function(snapshot) {
-        //   var val = snapshot.val();
-        //   // To Update AngularJS $scope either use $apply or $timeout
-        //   $scope.$apply(function() {
-        //     $rootScope.displayName = val;
-        //   });
-        // });
         $ionicLoading.hide();
         $state.go('tab.chats');
       }).catch(function(error) {

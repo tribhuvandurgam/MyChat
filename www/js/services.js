@@ -16,7 +16,18 @@ angular.module('starter.services', ['firebase'])
   }
 ])
 
-
+.factory("Database", ["$firebaseAuth", "$rootScope",
+  function($firebaseAuth, $rootScope) {
+    // var config = {
+    //   apiKey: "AIzaSyDjj7tIET2Rxh_tzR6MCLLylLYkLSJBNcI",
+    //   authDomain: "https://firechat-26793.firebaseio.com",
+    //   databaseURL: "https://firechat-26793.firebaseio.com/"
+    // };
+    // firebase.initializeApp(config);
+    //var ref = firebase.database().ref();
+    return firebase.database();
+  }
+])
 
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
