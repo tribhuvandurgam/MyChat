@@ -9,15 +9,16 @@ angular.module('starter.services', ['firebase'])
       databaseURL: "https://firechat-26793.firebaseio.com/"
     };
     firebase.initializeApp(config);
-    var ref = firebase.database().ref();
+    //var ref = firebase.database().ref();
     //var ref = new Firebase('https://firechat-26793.firebaseio.com');
     //return firebase.database().ref();
-    return firebase.auth();
+    return $firebaseAuth(firebase.auth());
   }
 ])
 
-.factory("Database", ["$firebaseAuth", "$rootScope",
-  function($firebaseAuth, $rootScope) {
+.factory("Database", ["$firebase", "$rootScope",
+  function($firebase , $rootScope) {
+    debugger
     // var config = {
     //   apiKey: "AIzaSyDjj7tIET2Rxh_tzR6MCLLylLYkLSJBNcI",
     //   authDomain: "https://firechat-26793.firebaseio.com",
@@ -25,7 +26,7 @@ angular.module('starter.services', ['firebase'])
     // };
     // firebase.initializeApp(config);
     //var ref = firebase.database().ref();
-    return firebase.database();
+    return firebase.database().ref();
   }
 ])
 

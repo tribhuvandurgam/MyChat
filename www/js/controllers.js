@@ -3,7 +3,7 @@ angular.module('starter.controllers', [])
 
 
 //MYCONTROLLER
-.controller('LoginCtrl', function($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope, Auth,Database) {
+.controller('LoginCtrl', function($scope, $ionicModal, $state, $firebaseAuth, $ionicLoading, $rootScope, Auth, Database) {
   console.log('Login Controller Initialized');
 
   $ionicModal.fromTemplateUrl('templates/signup.html', {
@@ -14,41 +14,41 @@ angular.module('starter.controllers', [])
 
   $scope.createUser = function(user) {
     console.log("Create User Function called");
-            if (user && user.email && user.password && user.displayname) {
-                $ionicLoading.show({
-                    template: 'Signing Up...'
-                });
+    if (user && user.email && user.password && user.displayname) {
+      $ionicLoading.show({
+        template: 'Signing Up...'
+      });
 
-Auth.createUserWithEmailAndPassword(user.email,user.password).then(function (userData) {
-    alert("User created successfully!");
-    Database.ref().child("users").child(userData.uid).set({
-        email: user.email,
-        displayName: user.displayname
-    });
-    $ionicLoading.hide();
-    $scope.modal.hide();
-}).catch(function (error) {
-  if(error.code === "auth/email-already-in-use"){
-    alert(error);
-    $ionicLoading.hide();
-    $scope.modal.hide();
-  }else {
-    alert(error);
-    $ionicLoading.hide();
-  }
+      Auth.$createUserWithEmailAndPassword(user.email, user.password).then(function(userData) {
+        alert("User created successfully!");
+        Database.ref().child("users").child(userData.uid).set({
+          email: user.email,
+          displayName: user.displayname
+        });
+        $ionicLoading.hide();
+        $scope.modal.hide();
+      }).catch(function(error) {
+        if (error.code === "auth/email-already-in-use") {
+          alert(error);
+          $ionicLoading.hide();
+          $scope.modal.hide();
+        } else {
+          alert(error);
+          $ionicLoading.hide();
+        }
 
-});
-            } else
-    alert("Please fill all details");
+      });
+    } else
+      alert("Please fill all details");
   }
 
   $scope.signIn = function(user) {
     console.log("Sign In Clicked");
-      if (user && user.email && user.pwdForLogin) {
+    if (user && user.email && user.pwdForLogin) {
       $ionicLoading.show({
         template: 'Signing In...'
       });
-      Auth.signInWithEmailAndPassword(user.email, user.pwdForLogin).then(function(authData) {
+      Auth.$signInWithEmailAndPassword(user.email, user.pwdForLogin).then(function(authData) {
         $ionicLoading.hide();
         $state.go('tab.chats');
       }).catch(function(error) {
@@ -64,7 +64,7 @@ Auth.createUserWithEmailAndPassword(user.email,user.password).then(function (use
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('ChatsCtrl', function($scope, Chats) {
+.controller('ChatsCtrl', function($scope, Chats, Database, $firebaseArray) {
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
   // To listen for when this page is active (for example, to refresh data),
@@ -72,7 +72,10 @@ Auth.createUserWithEmailAndPassword(user.email,user.password).then(function (use
   //
   //$scope.$on('$ionicView.enter', function(e) {
   //});
-
+  debugger;
+  $scope.usersDetail = $firebaseArray(Database.child("users"));
+  var syncObject = $firebaseObject(ref);
+  syncObject.$bindTo($scope, "usersDetail");
   $scope.chats = Chats.all();
   $scope.remove = function(chat) {
     Chats.remove(chat);
